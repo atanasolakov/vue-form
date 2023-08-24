@@ -46,7 +46,7 @@ export default {
 .button-container {
   display: flex;
   justify-content: space-around;
-  margin-top: 20px;
+  margin-top: 40px;
 }
 
 h6 {

@@ -23,7 +23,7 @@
       </tr>
       </tbody>
     </table>
-    <confirmation-dialog v-show="showDialog" @confirm="confirmRemove" @cancel="this.showDialog = false" />
+    <confirmation-dialog v-show="showDialog" @confirm="confirmRemove" @cancel="showDialog = false" />
   </div>
 </template>
 
@@ -61,7 +61,10 @@ export default {
 <style scoped>
 .entries-container {
   margin-top: 20px;
+  padding: 10px;
   overflow-x: auto;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
 }
 
 .entry-table {

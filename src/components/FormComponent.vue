@@ -5,21 +5,21 @@
       <div class="input-container">
       <label for="name">Name</label>
         <div style="display: flex; justify-content: space-between">
-        <input v-model="newEntry.name" id="name" style="width: 45%" placeholder="Enter First name" required>
-        <input v-model="newEntry.surname" id="surname" style="width: 45%" placeholder="Enter Surname" required>
+        <input v-model="newEntry.name" id="name" style="width: 48%" placeholder="Enter First name">
+        <input v-model="newEntry.surname" id="surname" style="width: 48%" placeholder="Enter Surname">
         </div>
       </div>
       <div class="input-container">
       <label for="email">Email</label>
-      <input v-model="newEntry.email" id="email" placeholder="Enter email" type="email" required>
+      <input v-model="newEntry.email" id="email" placeholder="Enter email" type="email">
       </div>
       <div class="input-container">
       <label for="age">Age</label>
-      <input v-model.number="newEntry.age" id="age" type="number" required>
+      <input v-model.number="newEntry.age" id="age" type="number">
       </div>
       <div class="input-container">
       <label for="favoriteColor">Favorite color</label>
-      <select v-model="newEntry.color" id="favoriteColor" required>
+      <select v-model="newEntry.color" id="favoriteColor">
         <option value="" disabled>Select a color</option>
         <option v-for="(color, index) in colorOptions" :value="color" :key="index">{{ color }}</option>
       </select>
@@ -46,7 +46,7 @@
     </div>
     <h2>Entries</h2>
     <TableComponent v-if="entries.length > 0" :entries="entries" :remove-entry="removeEntry" />
-    <div v-else>NO DATA</div>
+    <div class="no-data" v-else>NO DATA</div>
   </div>
 </template>
 
@@ -73,18 +73,37 @@ export default {
   },
   methods: {
     addEntry() {
-      if (this.validateEmail(this.newEntry.email) && this.newEntry.age < 120 && this.newEntry.contactPreferences.length > 0) {
+      const validationMessage = this.validate();
+      if (validationMessage === 'success') {
         const newEntryCopy = { ...this.newEntry };
-        newEntryCopy.id = Date.now(); // Add a unique identifier
+        newEntryCopy.id = Date.now();
         this.entries.push(newEntryCopy);
         this.clearForm();
       } else {
-        alert('Please correct the form fields before submitting.');
+        alert(validationMessage);
       }
     },
-    validateEmail(email) {
+    validate() {
+      const { email, name, surname, age, color, contactPreferences } = this.newEntry;
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(email);
+
+      if (!emailRegex.test(email)) {
+        return 'Please enter a valid email address.';
+      }
+
+      if (!name || !surname || !color) {
+        return 'Please fill all fields.';
+      }
+
+      if (age <= 0 || age >= 120) {
+        return 'Please enter a valid age between 1 and 119.';
+      }
+
+      if (contactPreferences.length === 0) {
+        return 'Please select one contact preference.';
+      }
+
+      return 'success';
     },
     clearForm() {
       this.newEntry = {
@@ -150,6 +169,7 @@ label {
   display: flex;
   justify-content: space-around;
 }
+
 .export-button {
   background-color: #007bff;
   color: white;
@@ -219,5 +239,12 @@ label {
 
 .contact-preference label {
     margin: 0;
+}
+.no-data {
+  text-align: center;
+  margin-top: 20px;
+  color: #c82333;
+  font-weight: bold;
+  font-size: 24px;
 }
 </style>
