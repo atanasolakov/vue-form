@@ -1,58 +1,223 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+  <div class="app-container">
+    <h2>Form</h2>
+    <form @submit.prevent="addEntry" class="entry-form">
+      <div class="input-container">
+      <label for="name">Name</label>
+        <div style="display: flex; justify-content: space-between">
+        <input v-model="newEntry.name" id="name" style="width: 45%" placeholder="Enter First name" required>
+        <input v-model="newEntry.surname" id="surname" style="width: 45%" placeholder="Enter Surname" required>
+        </div>
+      </div>
+      <div class="input-container">
+      <label for="email">Email</label>
+      <input v-model="newEntry.email" id="email" placeholder="Enter email" type="email" required>
+      </div>
+      <div class="input-container">
+      <label for="age">Age</label>
+      <input v-model.number="newEntry.age" id="age" type="number" required>
+      </div>
+      <div class="input-container">
+      <label for="favoriteColor">Favorite color</label>
+      <select v-model="newEntry.color" id="favoriteColor" required>
+        <option value="" disabled>Select a color</option>
+        <option v-for="(color, index) in colorOptions" :value="color" :key="index">{{ color }}</option>
+      </select>
+      </div>
+      <div class="input-container">
+        <label>Contact preference</label>
+        <div class="contact-preference-list">
+          <div v-for="(preference, index) in contactPreferences" :key="index" class="contact-preference">
+            <input type="radio" :id="preference" :value="preference" v-model="newEntry.contactPreferences">
+            <label :for="preference">{{ preference }}</label>
+          </div>
+        </div>
+      </div>
+      <div class="button-container">
+      <button type="submit" class="submit-button">Add Entry</button>
+      <button type="button" class="export-button" @click="exportModal = true">Export</button>
+      </div>
+    </form>
+    <div v-if="exportModal" class="modal-overlay" @click="exportModal = false">
+      <div class="export-modal">
+        <pre>{{ JSON.stringify(entries, null, 2) }}</pre>
+        <button @click="exportModal = false" class="close-modal-btn">Close</button>
+      </div>
+    </div>
+    <h2>Entries</h2>
+    <TableComponent v-if="entries.length > 0" :entries="entries" :remove-entry="removeEntry" />
+    <div v-else>NO DATA</div>
   </div>
 </template>
 
 <script>
+import TableComponent from "@/components/TableComponent.vue";
+
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
-}
+  components: {TableComponent},
+  data() {
+    return {
+      newEntry: {
+        name: '',
+        surname: '',
+        email: '',
+        age: null,
+        color: '',
+        contactPreferences: [],
+      },
+      colorOptions: ['red', 'green', 'blue', 'white', 'black'],
+      contactPreferences: ['by email', 'by phone', 'via SMS'],
+      entries: [],
+      exportModal: false,
+    };
+  },
+  methods: {
+    addEntry() {
+      if (this.validateEmail(this.newEntry.email) && this.newEntry.age < 120 && this.newEntry.contactPreferences.length > 0) {
+        const newEntryCopy = { ...this.newEntry };
+        newEntryCopy.id = Date.now(); // Add a unique identifier
+        this.entries.push(newEntryCopy);
+        this.clearForm();
+      } else {
+        alert('Please correct the form fields before submitting.');
+      }
+    },
+    validateEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    },
+    clearForm() {
+      this.newEntry = {
+        name: '',
+        surname: '',
+        email: '',
+        age: null,
+        color: '',
+        contactPreferences: [],
+      };
+    },
+    removeEntry(index) {
+      this.entries.splice(index, 1);
+    },
+  },
+};
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
+<style>
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
   padding: 0;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
 }
-a {
-  color: #42b983;
+
+.input-container {
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+  margin: 20px auto;
+  justify-content: center;
+}
+
+input, select {
+  border: none;
+  height: 30px;
+}
+
+label {
+  font-style: italic;
+  font-weight: bold;
+  display: block;
+  margin-right: auto;
+  margin-bottom: 10px;
+}
+
+.entry-form {
+  background-color: #f7f7f7;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-around;
+}
+.export-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submit-button {
+  background-color: #66ff66;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+}
+
+.export-modal {
+  text-align: center;
+  background-color: white;
+  max-width:  80%;
+  max-height: 80%;
+  height: auto;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  overflow: auto;
+}
+
+.close-modal-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.contact-preference-list {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.contact-preference {
+  display: flex;
+  align-items: center;
+}
+
+.contact-preference input[type="radio"] {
+  margin-right: 5px;
+}
+
+.contact-preference label {
+    margin: 0;
 }
 </style>
