@@ -97,5 +97,12 @@ export default {
 .remove-button:hover {
   background-color: #c82333;
 }
-
+@media (max-width: 768px) {
+  th {
+    font-size: 10px;
+  }
+  td{
+    font-size: 10px;
+  }
+}
 </style>

@@ -65,6 +65,7 @@ p {
   padding: 8px 20px;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .confirm-button {
@@ -79,10 +80,21 @@ p {
   border: none;
 }
 
+.confirm-button:hover {
+  background-color: #c82333;
+}
+
+.cancel-button:hover {
+  background-color: #aaa;
+
+}
+
 @media (max-width: 600px) {
   .modal {
     width: 70%;
-    padding: 20px;
+  }
+  .button-container {
+    margin-top: 10px;
   }
 }
 

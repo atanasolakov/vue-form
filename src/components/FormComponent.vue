@@ -28,7 +28,7 @@
         <label>Contact preference</label>
         <div class="contact-preference-list">
           <div v-for="(preference, index) in contactPreferences" :key="index" class="contact-preference">
-            <input type="radio" :id="preference" :value="preference" v-model="newEntry.contactPreferences">
+            <input type="checkbox" :id="preference" :value="preference" v-model="newEntry.contactPreferences">
             <label :for="preference">{{ preference }}</label>
           </div>
         </div>
@@ -52,7 +52,7 @@
 
 <script>
 import TableComponent from "@/components/TableComponent.vue";
-
+import { toast } from "vue3-toastify";
 export default {
   components: {TableComponent},
   data() {
@@ -74,13 +74,18 @@ export default {
   methods: {
     addEntry() {
       const validationMessage = this.validate();
-      if (validationMessage === 'success') {
+      if (validationMessage === 'Form Added Successfully') {
         const newEntryCopy = { ...this.newEntry };
         newEntryCopy.id = Date.now();
         this.entries.push(newEntryCopy);
         this.clearForm();
+        toast.success(validationMessage, {
+          position: "top-center"
+        })
       } else {
-        alert(validationMessage);
+        toast.error(validationMessage, {
+          position: "top-center"
+        })
       }
     },
     validate() {
@@ -100,10 +105,10 @@ export default {
       }
 
       if (contactPreferences.length === 0) {
-        return 'Please select one contact preference.';
+        return 'Please select at least one contact preference.';
       }
 
-      return 'success';
+      return 'Form Added Successfully';
     },
     clearForm() {
       this.newEntry = {
@@ -155,13 +160,15 @@ label {
   display: block;
   margin-right: auto;
   margin-bottom: 10px;
+  color: #555;
 }
 
 .entry-form {
-  background-color: #f7f7f7;
+  background: linear-gradient(135deg, #ffffff 0%, #f7f7f7 70%);
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
   padding: 20px;
   border-radius: 8px;
-  max-width: 800px;
+  max-width: 600px;
   margin: 0 auto;
 }
 
