@@ -35,7 +35,7 @@
       </div>
       <div class="button-container">
       <button type="submit" class="submit-button">Add Entry</button>
-      <button type="button" class="export-button" @click="exportModal = true">Export</button>
+      <button v-if="entries.length > 0" type="button" class="export-button" @click="exportModal = true">Export</button>
       </div>
     </form>
     <div v-if="exportModal" class="modal-overlay" @click="exportModal = false">
@@ -184,6 +184,7 @@ label {
   padding: 10px 20px;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .submit-button {
@@ -193,6 +194,14 @@ label {
   padding: 10px 20px;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #69cc26;
+}
+.export-button:hover {
+  background-color: #009bff
 }
 
 .modal-overlay {
